@@ -47,7 +47,7 @@ FROM
           AND im.ObjectType = 'RT::Ticket'
           AND im.Disabled = 0
   LEFT OUTER JOIN (
-    SELECT g.Instance TicketId, GROUP_CONCAT(xm.Name) Requestor, GROUP_CONCAT(xm.Organization) Organization
+    SELECT g.Instance TicketId, SUBSTRING_INDEX(GROUP_CONCAT(xm.Name), ',', 1) Requestor, SUBSTRING_INDEX(GROUP_CONCAT(xm.Organization), ',', 1) Organization
     FROM Groups g INNER JOIN (
       SELECT m.GroupId, m.MemberId, z.Name, z.Organization
       FROM GroupMembers m LEFT OUTER JOIN Users z ON m.MemberID = z.Id 
@@ -102,3 +102,4 @@ WHERE
       )
     )
   )
+ORDER BY t.Id
