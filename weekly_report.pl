@@ -23,6 +23,11 @@ use strict;
 use DBI;
 use Excel::Writer::XLSX;
 
+# Check command line parameters
+#-------------------------------
+die "Usage: weekly_report YYYYWW\n E.g.: weekly_report 201503 generates report for week 3 of year 2015\n" unless $#ARGV == 0 && $ARGV[0] =~ /^\d{6}$/;
+my $week = $ARGV[0];
+
 # Database - Customize these
 #----------------------------
 my $host = "localhost";
@@ -52,7 +57,6 @@ my $rowno = 0;
 my $colno = 0;
 my @row;
 my @col;
-my $field;
 
 # Connect to RT database and run the query
 #------------------------------------------
@@ -71,8 +75,8 @@ foreach $colno( 0 .. $sth->{NUM_OF_FIELDS} ) {
 #----------
 while( @row = $sth->fetchrow_array() )  {
   $rowno++;
-  foreach $field( 0 .. $#row ) {
-    $datasheet->write( $rowno, $field, $row[$field] );
+  foreach $colno( 0 .. $#row ) {
+    $datasheet->write( $rowno, $colno, $row[$colno] );
   }
 }
 
