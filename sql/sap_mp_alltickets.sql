@@ -49,7 +49,7 @@ FROM
   LEFT OUTER JOIN (
     SELECT g.Instance TicketId, SUBSTRING_INDEX(GROUP_CONCAT(xm.Name), ',', 1) Requestor, SUBSTRING_INDEX(GROUP_CONCAT(xm.Organization), ',', 1) Organization
     FROM Groups g INNER JOIN (
-      SELECT m.GroupId, m.MemberId, z.Name, CONCAT_WS(' ', z.Country, z.City) Organization
+      SELECT m.GroupId, m.MemberId, z.Name, CONCAT_WS(' ', z.Country, z.City, z.Address2) Organization
       FROM GroupMembers m LEFT OUTER JOIN Users z ON m.MemberID = z.Id 
     ) xm ON g.id = xm.GroupId
     WHERE g.Domain = 'RT::Ticket-Role' AND g.Type = 'Requestor'
