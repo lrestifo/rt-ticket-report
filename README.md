@@ -10,10 +10,10 @@ This project consists of a script that executes the following tasks:
 5. Saves the resulting XLSX report in a known location
 
 This script is designed to be run weekly, and calculates its values based on the current date's week.
-The date logic is defined directly in the SQL, in particular in the summary query.
+In case an optional parameter is given, it is interpreted as an Year/Week number to use for the calculation.
 
 ## Usage:
-weekly_report
+weekly_report [ yyyyww ]
 
 ## Issues:
 When the script runs, Perl may complain about locale settings.
