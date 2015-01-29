@@ -3,15 +3,16 @@ SELECT
 	SUM(CASE WHEN Prio = 'H' THEN  CreatedThisWeek ELSE 0 END) High_New,
 	SUM(CASE WHEN Prio = 'H' THEN     OpenThisWeek ELSE 0 END) High_Open,
 	SUM(CASE WHEN Prio = 'H' THEN ResolvedThisWeek ELSE 0 END) High_Closed,
-	SUM(CASE WHEN Prio = 'M' THEN  CreatedThisWeek ELSE 0 END) Med_New,
-	SUM(CASE WHEN Prio = 'M' THEN     OpenThisWeek ELSE 0 END) Med_Open,
-	SUM(CASE WHEN Prio = 'M' THEN ResolvedThisWeek ELSE 0 END) Med_Closed,
+	SUM(CASE WHEN Prio = 'M' THEN  CreatedThisWeek ELSE 0 END) Mid_New,
+	SUM(CASE WHEN Prio = 'M' THEN     OpenThisWeek ELSE 0 END) Mid_Open,
+	SUM(CASE WHEN Prio = 'M' THEN ResolvedThisWeek ELSE 0 END) Mid_Closed,
 	SUM(CASE WHEN Prio = 'L' THEN  CreatedThisWeek ELSE 0 END) Low_New,
 	SUM(CASE WHEN Prio = 'L' THEN     OpenThisWeek ELSE 0 END) Low_Open,
 	SUM(CASE WHEN Prio = 'L' THEN ResolvedThisWeek ELSE 0 END) Low_Closed,
 	SUM( CreatedThisWeek) Total_New,
 	SUM(    OpenThisWeek) Total_Open,
-	SUM(ResolvedThisWeek) Total_Closed
+	SUM(ResolvedThisWeek) Total_Closed,
+	MAX(YEARWEEK(NOW(), 3)) Week_Num
 FROM (
   SELECT
     t.Id,
