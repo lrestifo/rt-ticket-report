@@ -22,11 +22,14 @@
 
 use strict;
 use DBI;
+use DateTime;
 use Excel::Writer::XLSX;
 
 # Check command line parameter
 #------------------------------
+my $dt = DateTime->now;
 my $week = ( $#ARGV == 0 && $ARGV[0] =~ /^\d{6}$/ ? $ARGV[0] : 0 );
+my $yyww = ( $week == 0 ? 100 * $dt->week_year() + $dt->week_number() : $week );
 
 # Database - Customize these
 #----------------------------
@@ -87,7 +90,6 @@ foreach $colno( 0 .. $sths->{NUM_OF_FIELDS}-1 ) {
   $summary->write( $rowno, $colno, $col[$colno] );
 }
 # Data rows
-$rowno = 0;
 while( @row = $sths->fetchrow_array() )  {
   $rowno++;
   foreach $colno( 0 .. $#row ) {
@@ -96,6 +98,10 @@ while( @row = $sths->fetchrow_array() )  {
 }
 # Attributes
 $summary->set_tab_color( 'green' );
+$summary->set_column(  0,  0, 30 ); # Department
+$summary->set_column(  1, 12,  5 ); # Value area
+$summary->set_column( 13, 13,  8 ); # YYYYWW
+$summary->set_row( 0, 30 );         # Column titles
 
 #
 # Populate the RawData worksheet
@@ -117,7 +123,18 @@ while( @row = $sthd->fetchrow_array() )  {
   }
 }
 # Attributes
-$summary->set_tab_color( 'black' );
+$rawdata->set_tab_color( 'black' );
+
+#
+# Workbook attributes
+#---------------------
+$workbook->set_properties(
+  title     => 'SAP Tickets Report',
+  author    => 'Luciano Restifo',
+  company   => 'Esselte Leitz GmbH & Co KG',
+  subject   => 'Ticket report of week ' . $yyww,
+  comments  => 'v0.1 - Feb 2015'
+);
 
 # Game over
 #-----------
