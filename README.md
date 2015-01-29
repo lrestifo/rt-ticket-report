@@ -18,3 +18,6 @@ weekly_report [ yyyyww ]
 ## Issues:
 When the script runs, Perl may complain about locale settings.
 Look [here](https://sskaje.me/2014/01/lc-ctype-issue/) for a discussion of the topic and how to turn locale settings off.
+
+## Credits:
+Uses the great [Excel::Writer::XLSX](http://search.cpan.org/~jmcnamara/Excel-Writer-XLSX-0.81/) Perl module.
