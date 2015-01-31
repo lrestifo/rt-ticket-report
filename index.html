@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SAP Weekly Ticket Report">
+  <meta name="author" content="Luciano Restifo <lrestifo@esselte.com>">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>SAP Tickets • Week 201442</title>
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/tickets.css">
+</head>
+<body>
+  <div class="content">
+    <div class="header">
+      <div class="pure-menu pure-menu-open pure-menu-fixed pure-menu-horizontal">
+        <a class="pure-menu-heading" href="#"><img id="logo" src="img/logo.png"></a>
+        <ul>
+          <li><a href="#"><i class="fa fa-home fa-fw"></i> RT Home</a></li>
+          <li class="pure-menu-selected"><a href="#"><i class="fa fa-list-alt fa-fw"></i> SAP Ticket Report</a></li>
+        </ul>
+        <form class="pure-form">
+          <input type="text" class="pure-input-2-3" placeholder="Ticket #" id="srch-term">
+          <button class="pure-button" type="submit"><i class="fa fa-search fa-fw"></i></button>
+        </form>
+      </div>
+    </div>
+    <div class="splash">
+      <h1 class="splash-head">
+        <span id="today">0</span> &mdash; <span id="open_tasks">0</span> Active Tasks
+      </h1>
+    </div>
+    <div class="content">
+      <div class="pure-g content-ribbon l-box">
+        <div class="pure-u-1 buttonbar">
+          <a href="#" class="pure-button button-small button-info"><i class="fa fa-pause fa-fw"></i> Waiting <span class="badge badge-info" id="wtg_count">0</span></a>
+          <a href="#" class="pure-button button-small button-secondary"><i class="fa fa-cog fa-spin fa-fw"></i> Running <span class="badge badge-secondary" id="run_count">0</span></a>
+          <a href="#" class="pure-button button-small button-success"><i class="fa fa-check-circle fa-fw"></i> Complete <span class="badge badge-success" id="dne_count">0</span></a>
+          <a href="#" class="pure-button button-small button-warning"><i class="fa fa-warning fa-fw"></i> Delayed <span class="badge badge-warning" id="dly_count">0</span></a>
+          <a href="#" class="pure-button button-small button-error"><i class="fa fa-exclamation-circle fa-fw"></i> Stopped <span class="badge badge-error" id="err_count">0</span></a>
+          <a href="#" class="pull-right" id="chart_toggle" title="Toggle charts"><i id="chevron" class="fa fa-chevron-up fa-fw"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="content" id="charts">
+      <div class="pure-g content-ribbon">
+        <div class="pure-u-3-4 chart-wide" id="phase_column"></div>
+        <div class="pure-u-1-4 chart-box" id="status_pie"></div>
+      </div>
+    </div>
+    <div id="tasks_table" class="table-xsmall"></div>
+  </div>
+  <div class="footer">
+    <span id="visible"></span> tasks displayed
+  </div>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="http://yui.yahooapis.com/3.15.0/build/yui/yui-min.js"></script>
+  <script type="text/javascript">
+    google.load("visualization", "1.0", {"packages":["corechart", "table"]});
+  </script>
+  <script type="text/javascript" src="js/tickets.js"></script>
+</body>
+</html>
