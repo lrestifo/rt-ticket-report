@@ -1,0 +1,291 @@
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 auto;
+  line-height: 1.7em;
+}
+
+.l-box {
+  padding: 0.2em 1em;
+  text-align: center;
+}
+
+.header {
+  background: rgba(255, 255, 255, 0.89);
+  margin: 0 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
+  filter: alpha(opacity=95);
+  -moz-opacity: 0.95;
+  opacity: 0.95;
+}
+  .header .pure-menu {
+    padding: 0.5em;
+  }
+    .header .pure-menu li a:hover,
+    .header .pure-menu li a:focus {
+      background: none;
+      border: none;
+       color: #aaa;
+    }
+    .header .pure-form {
+      padding: 0;
+      display: inline-block;
+      float: right;
+      font-size: 80%;
+    }
+      .header .pure-form .pure-button {
+        margin-left: -4px;
+        width: 32px;
+        right: 0;
+        text-align: center;
+        border: 1px solid #ebebeb;
+        border-radius: 4px;
+        outline: none;
+      }
+
+#logo {
+  width: 111px;
+  height: 40px;
+}
+
+body .button-primary {
+  background: url("img/noise2-bg.png") repeat scroll 0 0 #02a6eb;
+  color: #fff;
+}
+
+.splash {
+  margin: 3em auto 0;
+  padding: 3em 1em 0.5em;
+  background: #eee;
+}
+  .splash .splash-head {
+    margin: 0em 0;
+    line-height: 1.2em;
+    text-align: center;
+  }
+  .splash .splash-subhead {
+    color: #999;
+    font-weight: 300;
+    line-height: 1.4em;
+  }
+  .splash .splash-button {
+    font-size: 100%;
+    margin: 2px;
+  }
+
+.buttonbar {
+  display: inline-block;
+}
+
+.content .content-subhead {
+  color: #999;
+  padding-bottom: 0.3em;
+  text-transform: uppercase;
+  margin: 0;
+  border-bottom: 2px solid #eee;
+  display: inline-block;
+}
+
+.content .content-ribbon {
+  margin: 0.5em;
+  border-bottom: 1px solid #eee;
+  font-weight: normal;
+}
+
+.content-ribbon .pure-button {
+  width: 16%;
+  text-align: center;
+  overflow: hidden;
+}
+
+.ribbon {
+  background: #eee;
+  text-align: center;
+  padding: 2em;
+  color: #999;
+}
+  .ribbon h2 {
+    display: inline;
+    font-weight: normal;
+  }
+
+.footer {
+  background: #111;
+  color: #666;
+  text-align: center;
+  padding: 1em;
+  font-size: 80%;
+}
+
+.button-success, .button-error, .button-warning, .button-secondary, .button-primary, .button-info {
+  color: white;
+  border-radius: 4px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-success {
+  background: rgb(28, 184, 65); /* this is a green */
+}
+
+.button-error {
+  background: rgb(202, 60, 60); /* this is a maroon */
+}
+
+.button-warning {
+  background: rgb(223, 117, 20); /* this is an orange */
+}
+
+.button-secondary {
+  background: rgb(66, 184, 221); /* this is a light blue */
+}
+
+.button-info {
+  background: #a2a6eb; /* this is a purple */
+}
+
+.button-xsmall {
+  font-size: 70%;
+}
+
+.button-small {
+  font-size: 85%;
+}
+
+.button-large {
+  font-size: 110%;
+}
+
+.button-xlarge {
+  font-size: 125%;
+}
+
+/* From http://cssdeck.com/labs/twitter-bootstrap-badges */
+.badge {
+  padding: 1px 8px 1px;
+  font-size: 12.025px;
+  font-weight: bold;
+  white-space: nowrap;
+  background-color: white;
+  -webkit-border-radius: 9px;
+  -moz-border-radius: 9px;
+  border-radius: 9px;
+}
+.badge:hover {
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+  .badge-primary {
+    color: #02a6eb;
+  }
+  .badge-primary:hover {
+    color: white;
+    background-color: #02a6eb;
+  }
+
+  .badge-error {
+    color: rgb(202, 60, 60);
+  }
+  .badge-error:hover {
+    color: white;
+    background-color: rgb(202, 60, 60);
+  }
+
+  .badge-warning {
+    color: rgb(223, 117, 20);
+  }
+  .badge-warning:hover {
+    color: white;
+    background-color: rgb(223, 117, 20);
+  }
+
+  .badge-success {
+    color: rgb(28, 184, 65);
+  }
+  .badge-success:hover {
+    color: white;
+    background-color: rgb(28, 184, 65);
+  }
+
+  .badge-secondary {
+    color: rgb(66, 184, 221);
+  }
+  .badge-secondary:hover {
+    color: white;
+    background-color: rgb(66, 184, 221);
+  }
+
+  .badge-info {
+    color: #a2a6eb;
+  }
+  .badge-info:hover {
+    color: white;
+    background-color: #a2a6eb;
+  }
+
+  .badge-inverse {
+    background-color: #333333;
+  }
+  .badge-inverse:hover {
+    background-color: #1a1a1a;
+  }
+
+.chart-narrow {
+  min-width: 100px;
+  min-height: 100px;
+}
+
+.chart-box {
+  min-width: 300px;
+  min-height: 300px;
+}
+
+.chart-wide {
+  min-width: 600px;
+  min-height: 300px;
+}
+
+.table-small {
+  font-size: 80%;
+}
+
+.table-xsmall {
+  font-size: 75%;
+}
+
+.remark-text {
+  border-bottom: 1px solid #eee;
+  color: #cccccc;
+  font-style: italic;
+  font-size: 90%;
+}
+
+.waiting {
+  color: white;
+  background-color: #a2a6eb; /* this is a purple */
+}
+
+.running {
+  color: white;
+  background-color: rgb(66, 184, 221); /* this is a light blue */
+}
+
+.complete {
+  color: white;
+  background: rgb(28, 184, 65); /* this is a green */
+}
+
+.delayed {
+  color: white;
+  background: rgb(223, 117, 20); /* this is an orange */
+}
+
+.stopped {
+  color: white;
+  background: rgb(202, 60, 60); /* this is a maroon */
+}
