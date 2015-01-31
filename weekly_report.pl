@@ -8,8 +8,7 @@
 #   1. Reads 2 different SQL queries from 2 text files - summary and detail
 #   2. Runs both queries against the RT database in sequence
 #   3. Combines result sets from both queries in an XLSX spreadsheet file
-#   4. Add formulas to the XLSX spreadheet thus building a complete report
-#   5. Saves the resulting XLSX report in a known location
+#   4. Saves query results as JSON documents
 # Usage:
 #   weekly_report [ yyyyww ]
 #
@@ -21,8 +20,9 @@
 ################################################################################
 
 use strict;
-use DBI;
 use DateTime;
+use DBI;
+use DBIx::JSON;
 use Excel::Writer::XLSX;
 
 # Check command line parameter
@@ -34,6 +34,7 @@ my $yyww = ( $week == 0 ? 100 * $dt->week_year() + $dt->week_number() : $week );
 # Database - Customize these
 #----------------------------
 my $host = "localhost";
+my $port = 3306;
 my $db   = "rtdb";
 my $user = "rtuser";
 my $pass = "rtpass";
@@ -42,7 +43,10 @@ my $pass = "rtpass";
 #------------
 my $sqld = "./sql/sap_mp_alltickets.sql";
 my $sqls = "./sql/sap_mp_summary.sql";
-my $xlsx = "./xls/tickets.xlsx";
+my $xlsx = "./data/tickets_$yyww.xlsx";
+my $conf = "./data/config.json";
+my $json1 = "./data/tickets_summary_$yyww.json";
+my $json2 = "./data/tickets_rawdata_$yyww.json";
 
 # Read the 2 queries from the SQL source files
 #----------------------------------------------
@@ -78,10 +82,11 @@ my @col;
 my $dbh = DBI->connect( "dbi:mysql:".$db.";host=".$host, $user, $pass ) or die "Connection error: " . $DBI::errstr . "\n";
 
 #
-# Populate the Summary worksheet
-#--------------------------------
+# Populate the Summary worksheet / table
+#----------------------------------------
 my $sths = $dbh->prepare( $sqs )  or die "Prepare statement error [summary]: " . $dbh->errstr . "\n";
 my $summ = $sths->execute() or die "SQL execution error [summary]: " . $sths->errstr . "\n";
+
 # Column titles
 $rowno = 0;
 foreach $colno( 0 .. $sths->{NUM_OF_FIELDS}-1 ) {
@@ -97,7 +102,7 @@ while( @row = $sths->fetchrow_array() )  {
   }
 }
 # Attributes
-$summary->set_tab_color( 'green' );
+$summary->set_tab_color( "green" );
 $summary->set_column(  0,  0, 30 ); # Department
 $summary->set_column(  1, 12,  5 ); # Value area
 $summary->set_column( 13, 13,  8 ); # YYYYWW
@@ -123,21 +128,35 @@ while( @row = $sthd->fetchrow_array() )  {
   }
 }
 # Attributes
-$rawdata->set_tab_color( 'black' );
+$rawdata->set_tab_color( "black" );
 
 #
 # Workbook attributes
 #---------------------
 $workbook->set_properties(
-  title     => 'SAP Tickets Report',
-  author    => 'Luciano Restifo',
-  company   => 'Esselte Leitz GmbH & Co KG',
-  subject   => 'Ticket report of week ' . $yyww,
-  comments  => 'v0.1 - Feb 2015'
+  title     => "SAP Ticket Report Week $yyww",
+  author    => "Luciano Restifo",
+  company   => "Esselte Leitz GmbH & Co KG",
+  comments  => "v0.1 - Feb 2015"
 );
+
+#
+# Now repeat the queries and save results as JSON data
+#------------------------------------------------------
+open( JSON1, ">$json1" ) or die "Can't open $json1: $!\n";
+open( JSON2, ">$json2" ) or die "Can't open $json2: $!\n";
+my $dsn = "dbname=$db;host=$host;port=$port";
+print JSON1 DBIx::JSON->new( $dsn, "mysql", $user, $pass )->do_select( $sqs )->get_json;
+print JSON2 DBIx::JSON->new( $dsn, "mysql", $user, $pass )->do_select( $sqd )->get_json;
+# Save the week number in the configuration file
+open( CONF, ">$conf" ) or die "Can't open $conf: $!\n";
+print CONF "{ \"week\":$yyww, \"summary\":\"$json1\", \"rawdata\":\"$json2\" }\n";
+close( CONF ) or die "Error closing $conf: $!\n";
 
 # Game over
 #-----------
 $sthd->finish;
 $sths->finish;
 $workbook->close() or die "Error closing $xlsx: $!\n";
+close( JSON1 ) or die "Error closing $json1: $!\n";
+close( JSON2 ) or die "Error closing $json2: $!\n";
