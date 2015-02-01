@@ -3,9 +3,77 @@
 //----------------------------------------------
 "use strict";
 
-var JSON_DATA = [];   // Use global variables to allow Google and YUI to coexist
-var KPI_nTasks, KPI_nWaiting, KPI_nRunning, KPI_nCompleted, KPI_nDelayed, KPI_nStopped;
+var SUMMARY_DATA = [];  // Use global variables to allow Google and YUI to coexist
+var RAWDATA_DATA = [];
+var CONF = {};          // Configuration object
+// var KPI_nTasks, KPI_nWaiting, KPI_nRunning, KPI_nCompleted, KPI_nDelayed, KPI_nStopped;
 
+var toCell = function( v ) {
+  // Number format helper for the summary table
+  return( v == 0 ? " " : v );
+}
+
+var toStyle = function( pri ) {
+  // Style format helper
+  switch( pri ) {
+    case 3:   return( "prio-h" );
+    case 2:   return( "prio-m" );
+    case 1:   return( "prio-l" );
+    default:  return( "prio-none" );
+  }
+}
+
+var summary_display = function() {
+  // Populate and show the Summary table
+  var data = new google.visualization.DataTable();
+  data.addColumn("string", "Department");
+  data.addColumn("string", "New");
+  data.addColumn("string", "Open");
+  data.addColumn("string", "Closed");
+  data.addColumn("string", "New");
+  data.addColumn("string", "Open");
+  data.addColumn("string", "Closed");
+  data.addColumn("string", "New");
+  data.addColumn("string", "Open");
+  data.addColumn("string", "Closed");
+  data.addColumn("string", "New");
+  data.addColumn("string", "Open");
+  data.addColumn("string", "Closed");
+  data.addRows(SUMMARY_DATA.length);
+  for( var j in SUMMARY_DATA ) {
+    console.log("#:" + parseInt(j) + "|" + SUMMARY_DATA[j][0] + "|" + SUMMARY_DATA[j][1] + "|");
+    data.setValue(parseInt(j),  0, SUMMARY_DATA[j][ 0]);
+    data.setValue(parseInt(j),  1, toCell(SUMMARY_DATA[j][ 1]));
+    data.setValue(parseInt(j),  2, toCell(SUMMARY_DATA[j][ 2]));
+    data.setValue(parseInt(j),  3, toCell(SUMMARY_DATA[j][ 3]));
+    data.setValue(parseInt(j),  4, toCell(SUMMARY_DATA[j][ 4]));
+    data.setValue(parseInt(j),  5, toCell(SUMMARY_DATA[j][ 5]));
+    data.setValue(parseInt(j),  6, toCell(SUMMARY_DATA[j][ 6]));
+    data.setValue(parseInt(j),  7, toCell(SUMMARY_DATA[j][ 7]));
+    data.setValue(parseInt(j),  8, toCell(SUMMARY_DATA[j][ 8]));
+    data.setValue(parseInt(j),  9, toCell(SUMMARY_DATA[j][ 9]));
+    data.setValue(parseInt(j), 10, toCell(SUMMARY_DATA[j][10]));
+    data.setValue(parseInt(j), 11, toCell(SUMMARY_DATA[j][11]));
+    data.setValue(parseInt(j), 12, toCell(SUMMARY_DATA[j][12]));
+    data.setProperty(parseInt(j), 1, "className", toStyle(3)); // high
+    data.setProperty(parseInt(j), 2, "className", toStyle(3));
+    data.setProperty(parseInt(j), 3, "className", toStyle(3));
+    data.setProperty(parseInt(j), 4, "className", toStyle(2)); // medium
+    data.setProperty(parseInt(j), 5, "className", toStyle(2));
+    data.setProperty(parseInt(j), 6, "className", toStyle(2));
+    data.setProperty(parseInt(j), 7, "className", toStyle(1)); // low
+    data.setProperty(parseInt(j), 8, "className", toStyle(1));
+    data.setProperty(parseInt(j), 9, "className", toStyle(1));
+    data.setProperty(parseInt(j),10, "className", toStyle(0)); // default
+    data.setProperty(parseInt(j),11, "className", toStyle(0));
+    data.setProperty(parseInt(j),12, "className", toStyle(0));
+  }
+  // Create a table view and place it on the page
+  var tableView = new google.visualization.DataView(data);
+  var summaryTable = new google.visualization.Table( document.getElementById("summaryTable") );
+  summaryTable.draw(tableView, {allowHtml: true, sortColumn: 0});
+}
+/*
 var set_Status_Icon = function (status) {
     var sCodes = {
         "waiting": "fa-pause",
@@ -16,7 +84,9 @@ var set_Status_Icon = function (status) {
     };
     return ( "<i class='fa " + sCodes[status.toLowerCase()] + " fa-fw'></i>");
 }
+*/
 
+/*
 var set_Status_Color = function (status) {
     var sCodes = {
         "waiting": "#a2a6eb",
@@ -27,13 +97,17 @@ var set_Status_Color = function (status) {
     };
     return ( "color:" + sCodes[status.toLowerCase()]);
 }
+*/
 
+/*
 var dCount = function (data, ixPhase, ixStat) {
     var sPhases = ["01 - Business preparation", "02 - Technical cutover", "03 - Master data migration", "04 - Stock migration", "05 - Sales orders migration", "06 - Technical setup"];
     var sStatus = ["Waiting", "Running", "Complete", "Delayed", "Stopped"];
     return( data.getFilteredRows([{column:9, value:sPhases[ixPhase]}, {column:10, value:sStatus[ixStat]}]).length );
 }
+*/
 
+/*
 var data_display = function() {
     // Process JSON_DATA into a Google DataTable
     var data = new google.visualization.DataTable();
@@ -103,6 +177,7 @@ var data_display = function() {
     KPI_nDelayed = data.getFilteredRows([{column:10, value:"Delayed"}]).length;
     KPI_nStopped = data.getFilteredRows([{column:10, value:"Stopped"}]).length;
 }
+*/
 
 YUI().use("node-base", "node-event-delegate", function (Y) {
     // This just makes sure that the href="#" attached to the <a> elements
@@ -112,6 +187,7 @@ YUI().use("node-base", "node-event-delegate", function (Y) {
     }, 'a[href="#"]');
 });
 
+/*
 YUI().use("transition", "node", function (Y) {
     // Toggle chart visibility
     Y.one("#chart_toggle").on("click", function(e) {
@@ -125,9 +201,56 @@ YUI().use("transition", "node", function (Y) {
         }
     });
 });
+*/
 
 YUI().use("io", "json-parse", "node", function (Y) {
-    // Load ticket data as JSON
+  // NOTE the loading order:
+  // 1. data/latest.json which contains the file names to be loaded next
+  // 2. data/summary_YYYYWW.json
+  // 3. data/rawdata_YYYYWW.json
+  //
+  // Load summary data table from JSON
+  var summary = {
+    timeout: 3000,
+    on: {
+      success: function(x, o) {
+        Y.log("Loaded: " + o.responseText.length + " characters", "info");
+        try {
+          SUMMARY_DATA = Y.JSON.parse(o.responseText);
+          Y.log("Parsed: " + SUMMARY_DATA.length + " rows", "info");
+          summary_display();
+        } catch(e) {
+          Y.log("Data parsing error", "error", "summary");
+          return;
+        }
+      },
+      failure: function(x, o) {
+        Y.log("Data loading failure: " + o.statusText, "error", "summary");        
+      }
+    }
+  };
+  // Load configuration data from JSON
+  var config = {
+    timeout: 3000,
+    on: {
+      success: function(x, o) {
+        Y.log("Loaded: " + o.responseText.length + " characters", "info");
+        try {
+          CONF = Y.JSON.parse(o.responseText);
+          Y.one("#thisWeek").set("text", CONF.week.toString().substring(4, 6) + " / " + CONF.week.toString().substring(0, 4));
+          Y.io(CONF.summaryJson, summary);
+        } catch(e) {
+          Y.log("Data parsing error", "error", "latest.json");
+          return;
+        }
+      },
+      failure: function(x, o) {
+        Y.log("Data loading failure: " + o.statusText, "error", "config");
+      }
+    }
+  };
+  // Load ticket data as JSON
+/*
     var callback = {
         timeout: 3000,
         on: {
@@ -160,6 +283,6 @@ YUI().use("io", "json-parse", "node", function (Y) {
             }
         }
     };
-//    Y.io("../cgi-bin/cutover/cutover.cgi", callback);
-    Y.io("./data/cutover.json", callback);
+*/
+    Y.io("data/latest.json", config);
 });
