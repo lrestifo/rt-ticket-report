@@ -6,16 +6,25 @@
 # Description:
 #   This script executes the following tasks:
 #   1. Reads 2 different SQL queries from 2 text files - summary and detail
-#   2. Runs both queries against the RT database in sequence
+#   2. Runs both queries in sequence against the RT database
 #   3. Combines result sets from both queries in an XLSX spreadsheet file
-#   4. Saves query results as JSON documents
+#   4. Saves query results as 2 separate JSON documents
+#   5. Saves query results as 2 separate CSV files
+#   6. Writes the outcome of its task in a JSON object saved as a text file
 # Usage:
 #   weekly_report [ yyyyww ]
-#
-#   This script is designed to be run weekly without parameters, in which case
-#   it computes values based on the current date's week.  In case a numeric
-#   parameter is given on the command line, it is interpreted as the year/week
-#   number to use for calculations (e.g. 201442 --> Week 42 of year 2014)
+# Notes:
+#   * This script is designed to be run weekly without parameters, in which case
+#     it computes values based on the current date's week.  In case a numeric
+#     parameter is given on the command line, it is interpreted as the year/week
+#     number to use for calculations (e.g. 201442 --> Week 42 of year 2014)
+#   * CSV output separator is TAB and not comma (in line with RT practice)
+# Output:
+#   All output is saved in the ./data directory
+#   1. tickets_YYYYWW.xls (2 worksheets named Summary and RawData)
+#   2. tickets_summary_YYYYWW.json and tickets_rawdata_YYYYWW.json
+#   3. tickets_summary_YYYYWW.csv  and tickets_rawdata_YYYYWW.csv
+#   4. latest.json
 #
 ################################################################################
 
@@ -44,9 +53,11 @@ my $pass = "rtpass";
 my $sqld = "./sql/sap_mp_alltickets.sql";
 my $sqls = "./sql/sap_mp_summary.sql";
 my $xlsx = "./data/tickets_$yyww.xlsx";
-my $conf = "./data/config.json";
 my $json1 = "./data/tickets_summary_$yyww.json";
 my $json2 = "./data/tickets_rawdata_$yyww.json";
+my $csv1 = "./data/tickets_summary_$yyww.csv";
+my $csv2 = "./data/tickets_rawdata_$yyww.csv";
+my $conf = "./data/latest.json";
 
 # Read the 2 queries from the SQL source files
 #----------------------------------------------
@@ -76,17 +87,19 @@ my $rowno = 0;
 my $colno = 0;
 my @row;
 my @col;
+my @csvcol;
+my $csvrow;
 
 # Connect to RT database
 #------------------------
 my $dbh = DBI->connect( "dbi:mysql:".$db.";host=".$host, $user, $pass ) or die "Connection error: " . $DBI::errstr . "\n";
 
 #
-# Populate the Summary worksheet / table
+# Populate the Summary worksheet and csv
 #----------------------------------------
 my $sths = $dbh->prepare( $sqs )  or die "Prepare statement error [summary]: " . $dbh->errstr . "\n";
 my $summ = $sths->execute() or die "SQL execution error [summary]: " . $sths->errstr . "\n";
-
+open( CSV1, ">$csv1" ) or die "Can't open $csv1: $!\n";
 # Column titles
 $rowno = 0;
 foreach $colno( 0 .. $sths->{NUM_OF_FIELDS}-1 ) {
@@ -94,31 +107,44 @@ foreach $colno( 0 .. $sths->{NUM_OF_FIELDS}-1 ) {
   $col[$colno] =~ s/_/ /g;
   $summary->write( $rowno, $colno, $col[$colno] );
 }
+@csvcol = @{$sths->{NAME}};
+$csvrow = join( "\t", @csvcol );
+print CSV1 $csvrow . "\n";
 # Data rows
 while( @row = $sths->fetchrow_array() )  {
   $rowno++;
   foreach $colno( 0 .. $#row ) {
     $summary->write( $rowno, $colno, $row[$colno] );
   }
+  $csvrow = join( "\t", @row );
+  print CSV1 $csvrow . "\n";
 }
+my $summaryRows = $rowno;
 # Attributes
 $summary->set_tab_color( "green" );
 $summary->set_column(  0,  0, 30 ); # Department
-$summary->set_column(  1, 12,  5 ); # Value area
-$summary->set_column( 13, 13,  8 ); # YYYYWW
+$summary->set_column(  1, 12, 12 ); # Value area
+$summary->set_column( 13, 13, 15 ); # YYYYWW
 $summary->set_row( 0, 30 );         # Column titles
+# Done with this
+close( CSV1 ) or die "Error closing $csv1: $!\n";
+$sths->finish;
 
 #
-# Populate the RawData worksheet
-#--------------------------------
+# Populate the RawData worksheet and csv
+#----------------------------------------
 my $sthd = $dbh->prepare( $sqd )  or die "Prepare statement error [detail]: " . $dbh->errstr . "\n";
 my $rows = $sthd->execute() or die "SQL execution error [detail]: " . $sthd->errstr . "\n";
+open( CSV2, ">$csv2" ) or die "Can't open $csv2: $!\n";
 # Column titles
 $rowno = 0;
 foreach $colno( 0 .. $sthd->{NUM_OF_FIELDS}-1 ) {
   $col[$colno] = $sthd->{NAME}->[$colno];
   $rawdata->write( $rowno, $colno, $col[$colno] );
 }
+@csvcol = @{$sthd->{NAME}};
+$csvrow = join( "\t", @csvcol );
+print CSV2 $csvrow . "\n";
 # Data rows
 $rowno = 0;
 while( @row = $sthd->fetchrow_array() )  {
@@ -126,9 +152,15 @@ while( @row = $sthd->fetchrow_array() )  {
   foreach $colno( 0 .. $#row ) {
     $rawdata->write( $rowno, $colno, $row[$colno] );
   }
+  my $csvrow = join( "\t", @row );
+  print CSV2 $csvrow . "\n";
 }
+my $rawdataRows = $rowno;
 # Attributes
 $rawdata->set_tab_color( "black" );
+# Done with this
+close( CSV2 ) or die "Error closing $csv2: $!\n";
+$sthd->finish;
 
 #
 # Workbook attributes
@@ -137,8 +169,10 @@ $workbook->set_properties(
   title     => "SAP Ticket Report Week $yyww",
   author    => "Luciano Restifo",
   company   => "Esselte Leitz GmbH & Co KG",
+  subject   => "Report specification: Esselte CIO",
   comments  => "v0.1 - Feb 2015"
 );
+$workbook->close() or die "Error closing $xlsx: $!\n";
 
 #
 # Now repeat the queries and save results as JSON data
@@ -148,15 +182,22 @@ open( JSON2, ">$json2" ) or die "Can't open $json2: $!\n";
 my $dsn = "dbname=$db;host=$host;port=$port";
 print JSON1 DBIx::JSON->new( $dsn, "mysql", $user, $pass )->do_select( $sqs )->get_json;
 print JSON2 DBIx::JSON->new( $dsn, "mysql", $user, $pass )->do_select( $sqd )->get_json;
-# Save the week number in the configuration file
+close( JSON1 ) or die "Error closing $json1: $!\n";
+close( JSON2 ) or die "Error closing $json2: $!\n";
+
+#
+# Save run results in the configuration file
+#--------------------------------------------
 open( CONF, ">$conf" ) or die "Can't open $conf: $!\n";
-print CONF "{ \"week\":$yyww, \"summary\":\"$json1\", \"rawdata\":\"$json2\" }\n";
+print CONF "{ " .
+    "\"week\":$yyww, " .
+    "\"summaryRows\":$summaryRows, \"rawdataRows\":$rawdataRows, " .
+    "\"xlsx\":\"$xlsx\", " .
+    "\"summaryJson\":\"$json1\", \"rawdataJson\":\"$json2\", " .
+    "\"summaryCsv\":\"$csv1\", \"rawdataCsv\":\"$csv2\" " .
+  "}\n";
 close( CONF ) or die "Error closing $conf: $!\n";
 
 # Game over
 #-----------
-$sthd->finish;
-$sths->finish;
-$workbook->close() or die "Error closing $xlsx: $!\n";
-close( JSON1 ) or die "Error closing $json1: $!\n";
-close( JSON2 ) or die "Error closing $json2: $!\n";
+exit( 0 );
