@@ -32,7 +32,7 @@ body {
        color: #aaa;
     }
     .header .pure-form {
-      padding: 0;
+      padding: 10px 0px 0px 0px;
       display: inline-block;
       float: right;
       font-size: 80%;
@@ -41,7 +41,7 @@ body {
         margin-left: -4px;
         width: 32px;
         right: 0;
-        text-align: center;
+        text-align: left;
         border: 1px solid #ebebeb;
         border-radius: 4px;
         outline: none;
@@ -117,8 +117,10 @@ body .button-primary {
   background: #111;
   color: #666;
   text-align: center;
-  padding: 1em;
+  padding: 0.2em;
   font-size: 80%;
+  height: 32px;
+  width: 100%;
 }
 
 .button-success, .button-error, .button-warning, .button-secondary, .button-primary, .button-info {
@@ -161,6 +163,11 @@ body .button-primary {
 
 .button-xlarge {
   font-size: 125%;
+}
+
+.button-separator {
+  padding: 0px 16px 0px 16px;
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 /* From http://cssdeck.com/labs/twitter-bootstrap-badges */
@@ -288,4 +295,26 @@ body .button-primary {
 .stopped {
   color: white;
   background: rgb(202, 60, 60); /* this is a maroon */
+}
+
+.prio-h {
+  color: #8c3a28;
+  background-color: #f5ab9e !important;
+  text-align: center;
+}
+
+.prio-m {
+  color: #af9540;
+  background-color: #fcebbd !important;
+  text-align: center;
+}
+
+.prio-l {
+  color: #5992aa;
+  background-color: #e1f2fa !important;
+  text-align: center;
+}
+
+.prio-none {
+  text-align: center;
 }
