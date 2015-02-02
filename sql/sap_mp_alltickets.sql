@@ -17,7 +17,7 @@ SELECT
   DATE_FORMAT(t.Due,     '%Y-%m-%d')      Due,
   DATE_FORMAT(t.LastUpdated, '%Y-%m-%d')  LastUpdated,
   IF(t.Status = 'resolved' OR t.Status = 'rejected', DATE_FORMAT(t.Resolved,'%Y-%m-%d'), '') Resolved,
-  IF(t.Status = 'resolved' OR t.Status = 'rejected', DATEDIFF(t.Resolved, t.Created), 0) Age,
+  IF(t.Status = 'resolved' OR t.Status = 'rejected', DATEDIFF(t.Resolved, t.Created), DATEDIFF(NOW(), t.Created)) Age,
   IF(t.Status = 'resolved' OR t.Status = 'rejected', TRUE, FALSE) IsClosed,
   CASE
     WHEN t.Priority >= 40 THEN 'H'
