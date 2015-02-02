@@ -8,6 +8,11 @@ var RAWDATA_DATA = [];
 var CONF = {};          // Configuration object
 // var KPI_nTasks, KPI_nWaiting, KPI_nRunning, KPI_nCompleted, KPI_nDelayed, KPI_nStopped;
 
+var toWeekString = function( wwyy ) {
+  // Return a human-friendly ww/yyyy representation
+  return( wwyy == 0 ? "" : wwyy.toString().substring(4, 6) + " / " + wwyy.toString().substring(0, 4) );
+}
+
 var toCell = function( v ) {
   // Number format helper for the summary table
   return( v == 0 ? " " : v );
@@ -73,6 +78,73 @@ var summary_display = function() {
   var summaryTable = new google.visualization.Table( document.getElementById("summaryTable") );
   summaryTable.draw(tableView, {allowHtml: true, sortColumn: 0});
 }
+
+var rawdata_display = function() {
+  // Populate and show the Rawdata table
+  var data = new google.visualization.DataTable();
+  data.addColumn("number", "#");
+  data.addColumn("string", "Subject");
+  data.addColumn("string", "Classification");
+  data.addColumn("string", "Type");
+  data.addColumn("string", "Queue");
+  data.addColumn("string", "Owner");
+  data.addColumn("string", "Requestor");
+  data.addColumn("string", "Department");
+  data.addColumn("string", "Country");
+  data.addColumn("string", "Impact");
+  data.addColumn("number", "Priority");
+  data.addColumn("string", "Status");
+  data.addColumn("number", "Effort (h)");
+  data.addColumn("datetime", "Created");
+  data.addColumn("datetime", "Started");
+  data.addColumn("datetime", "Due");
+  data.addColumn("datetime", "LastUpdated");
+  data.addColumn("datetime", "Resolved");
+  data.addColumn("number", "Age (d)");
+  data.addColumn("boolean", "Is Closed");
+  data.addColumn("string", "Prio");
+  data.addColumn("string", "Created Week");
+  data.addColumn("string", "Resolved Week");
+  data.addRows(RAWDATA_DATA.length);
+  for( var j in RAWDATA_DATA ) {
+    console.log("#" + RAWDATA_DATA[j][0] + ": " + RAWDATA_DATA[j][1] + "/" + RAWDATA_DATA[j][18]);
+    data.setValue(parseInt(j),  0, RAWDATA_DATA[j][ 0]);  //id
+    data.setValue(parseInt(j),  1, RAWDATA_DATA[j][ 1]);  //subject
+    data.setValue(parseInt(j),  2, RAWDATA_DATA[j][ 2]);  //classification
+    data.setValue(parseInt(j),  3, RAWDATA_DATA[j][ 3]);  //type
+    data.setValue(parseInt(j),  4, RAWDATA_DATA[j][ 4]);  //queue
+    data.setValue(parseInt(j),  5, RAWDATA_DATA[j][ 5]);  //owner
+    data.setValue(parseInt(j),  6, RAWDATA_DATA[j][ 6]);  //requestor
+    data.setValue(parseInt(j),  7, RAWDATA_DATA[j][ 7]);  //department
+    data.setValue(parseInt(j),  8, RAWDATA_DATA[j][ 8]);  //country
+    data.setValue(parseInt(j),  9, RAWDATA_DATA[j][ 9]);  //impact
+    data.setValue(parseInt(j), 10, RAWDATA_DATA[j][10]);  //priority
+    data.setValue(parseInt(j), 11, RAWDATA_DATA[j][11]);  //status
+    data.setValue(parseInt(j), 12, RAWDATA_DATA[j][12] / 60);  //effort
+    data.setValue(parseInt(j), 13, new Date(Date.parse(RAWDATA_DATA[j][13])));  //created
+    data.setValue(parseInt(j), 14, new Date(Date.parse(RAWDATA_DATA[j][14])));  //started
+    data.setValue(parseInt(j), 15, new Date(Date.parse(RAWDATA_DATA[j][15])));  //due
+    data.setValue(parseInt(j), 16, new Date(Date.parse(RAWDATA_DATA[j][16])));  //lastupdated
+    data.setValue(parseInt(j), 17, ( RAWDATA_DATA[j][17].length > 0 ? new Date(Date.parse(RAWDATA_DATA[j][17])) : null ));  //resolved
+    data.setValue(parseInt(j), 18, RAWDATA_DATA[j][18]);  //age
+    data.setValue(parseInt(j), 19, ( RAWDATA_DATA[j][19] == 0 ? false : true ));  //isclosed
+    data.setValue(parseInt(j), 20, RAWDATA_DATA[j][20]);  //prio
+    data.setValue(parseInt(j), 21, toWeekString(RAWDATA_DATA[j][21]));  //createdinweek
+    data.setValue(parseInt(j), 22, toWeekString(RAWDATA_DATA[j][22]));  //resolvedinweek
+  }
+  // Format dates
+  var dFmt = new google.visualization.DateFormat({pattern: "dd MMM yyyy"});
+  dFmt.format(data, 13);
+  dFmt.format(data, 14);
+  dFmt.format(data, 15);
+  dFmt.format(data, 16);
+  dFmt.format(data, 17);
+  // Create a table view and place it on the page
+  var tableView = new google.visualization.DataView(data);
+  var rawdataTable = new google.visualization.Table( document.getElementById("rawdataTable") );
+  rawdataTable.draw(tableView, {allowHtml: true, sortColumn: 0});
+}
+
 /*
 var set_Status_Icon = function (status) {
     var sCodes = {
@@ -209,15 +281,36 @@ YUI().use("io", "json-parse", "node", function (Y) {
   // 2. data/summary_YYYYWW.json
   // 3. data/rawdata_YYYYWW.json
   //
+  // Load rawdata data table from JSON
+  var rawdata = {
+    timeout: 3000,
+    on: {
+      success: function(x, o) {
+        Y.log("Loaded: " + o.responseText.length + " characters [rawdata]", "info");
+        try {
+          RAWDATA_DATA = Y.JSON.parse(o.responseText);
+          Y.log("Parsed: " + RAWDATA_DATA.length + " rows [rawdata]", "info");
+          rawdata_display();
+        } catch(e) {
+          Y.log("Data parsing error", "error", "rawdata");
+          return;
+        }
+      },
+      failure: function(x, o) {
+        Y.log("Data loading failure: " + o.statusText, "error", "rawdata");        
+      }
+    }
+  };
+  //
   // Load summary data table from JSON
   var summary = {
     timeout: 3000,
     on: {
       success: function(x, o) {
-        Y.log("Loaded: " + o.responseText.length + " characters", "info");
+        Y.log("Loaded: " + o.responseText.length + " characters [summary]", "info");
         try {
           SUMMARY_DATA = Y.JSON.parse(o.responseText);
-          Y.log("Parsed: " + SUMMARY_DATA.length + " rows", "info");
+          Y.log("Parsed: " + SUMMARY_DATA.length + " rows [summary]", "info");
           summary_display();
         } catch(e) {
           Y.log("Data parsing error", "error", "summary");
@@ -229,23 +322,24 @@ YUI().use("io", "json-parse", "node", function (Y) {
       }
     }
   };
-  // Load configuration data from JSON
+  // Load configuration data from JSON, trigger data loading via Ajax
   var config = {
     timeout: 3000,
     on: {
       success: function(x, o) {
-        Y.log("Loaded: " + o.responseText.length + " characters", "info");
+        Y.log("Loaded: " + o.responseText.length + " characters [config]", "info");
         try {
           CONF = Y.JSON.parse(o.responseText);
-          Y.one("#thisWeek").set("text", CONF.week.toString().substring(4, 6) + " / " + CONF.week.toString().substring(0, 4));
+          Y.one("#thisWeek").set("text", toWeekString(CONF.week));
           Y.io(CONF.summaryJson, summary);
+          Y.io(CONF.rawdataJson, rawdata);
         } catch(e) {
           Y.log("Data parsing error", "error", "latest.json");
           return;
         }
       },
       failure: function(x, o) {
-        Y.log("Data loading failure: " + o.statusText, "error", "config");
+        Y.log("Data loading failure: " + o.statusText, "error", "latest.json");
       }
     }
   };
