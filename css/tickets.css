@@ -129,6 +129,12 @@ body .button-primary {
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
+.button-lopri {
+  color: #5992aa;
+  border-radius: 4px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
 .button-success {
   background: rgb(28, 184, 65); /* this is a green */
 }
@@ -147,6 +153,10 @@ body .button-primary {
 
 .button-info {
   background: #a2a6eb; /* this is a purple */
+}
+
+.button-lopri {
+  background: #e1f2fa; /* this is a delicate azure */
 }
 
 .button-xsmall {
@@ -233,6 +243,14 @@ body .button-primary {
   .badge-info:hover {
     color: white;
     background-color: #a2a6eb;
+  }
+
+  .badge-lopri {
+    color: #5992aa;
+  }
+  .badge-lopri:hover {
+    color: #5992aa;
+    background-color: #e1f2fa;
   }
 
   .badge-inverse {
