@@ -135,6 +135,20 @@ body .button-primary {
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
+.button-midpri {
+  color: #af9540;
+  background-color: #fcebbd;
+  border-radius: 4px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button-highpri {
+  color: #8c3a28;
+  background-color: #f5ab9e;
+  border-radius: 4px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
 .button-success {
   background: rgb(28, 184, 65); /* this is a green */
 }
@@ -280,7 +294,7 @@ body .button-primary {
 }
 
 .table-xsmall {
-  font-size: 75%;
+  font-size: xx-small; /* 75%; */
 }
 
 .remark-text {
@@ -319,18 +333,21 @@ body .button-primary {
   color: #8c3a28;
   background-color: #f5ab9e !important;
   text-align: center;
+  border: 1px dotted #8c3a28;
 }
 
 .prio-m {
   color: #af9540;
   background-color: #fcebbd !important;
   text-align: center;
+  border: 1px dotted #af9540;
 }
 
 .prio-l {
   color: #5992aa;
   background-color: #e1f2fa !important;
   text-align: center;
+  border: 1px dotted #5992aa;
 }
 
 .prio-none {
